@@ -4,6 +4,20 @@ This is the starting codebase for the [Build Your Own CLI Coding Agent from Scra
 
 The session is mostly live coding with minimal lecture. By the end, you'll have a working coding agent that you built yourself, that you understand completely, and that you can customize however you want.
 
+## Event Instructions
+
+### 1. Fetch the latest code
+
+```bash
+git pull origin main
+```
+
+### 2. Setup shell alias
+
+```bash
+alias ald='uv run --no-sync python -m alduin.main'
+```
+
 ## Pre-event Environment Setup
 
 Please go through these steps before the workshop so we can jump straight into coding when we start. If you run into issues, reach out and I'll help you sort it out.
