@@ -86,31 +86,52 @@ def agent_loop(client: anthropic.Anthropic, console: Console) -> None:
         ui.clear_previous_line()
         ui.print_user_message(console, user_input)
 
-        assistant_reply = call(client = client, 
-                            console = console,
-                            system_prompt = system_prompt.get(),
-                            messages = conversation,
-                            tool_schemas = schema_converter.generate_tool_schema(active_tools))
+        while True:
+            assistant_reply = call(client = client, 
+                                console = console,
+                                system_prompt = system_prompt.get(),
+                                messages = conversation,
+                                tool_schemas = schema_converter.generate_tool_schema(active_tools))
 
-        rich.pretty.pprint(assistant_reply) # allows us to see the response. 
+            rich.pretty.pprint(assistant_reply) # allows us to see the response. 
 
-        conversation.append({"role": "assistant", "content": assistant_reply.content})
+            conversation.append({"role": "assistant", "content": assistant_reply.content})
+            tool_results = [] # to keep track of all the additional tool calls from doing a tool call
 
-        for block in assistant_reply.content: # why is this a loop? 
-            if block.type == "text":
-                ui.print_assistant_reply(console=console, 
-                        text=block.text, 
-                        input_tokens=assistant_reply.usage.input_tokens, 
-                        output_tokens=assistant_reply.usage.output_tokens)
-            elif block.type =="tool_use":
-                print(f"tool use requested for tool: {block.name} with args: {block.input}")
-                result = execute_tool(
-                    block.name,
-                    tools_lookup,
-                    block.input,
-                    console
-                )
-                
+            for block in assistant_reply.content: # why is this a loop? 
+                if block.type == "text":
+                    ui.print_assistant_reply(console=console, 
+                            text=block.text, 
+                            input_tokens=assistant_reply.usage.input_tokens, 
+                            output_tokens=assistant_reply.usage.output_tokens)
+                elif block.type =="tool_use":
+                    print(f"tool use requested for tool: {block.name} with args: {block.input}")
+                    result = execute_tool(
+                        block.name,
+                        tools_lookup,
+                        block.input,
+                        console
+                    )
+                    tool_results.append(
+                        {
+                            "type":"tool_result",
+                            "tool_use_id":block.id,
+                            "content": result
+                        }
+                    )
+                    
+            if not tool_results: # if no more tools to call break out.
+                break
+
+            conversation.append(
+                {
+                    "role":"user",
+                    "content": tool_results
+                }
+            )
+
+            
+
 
         
 
