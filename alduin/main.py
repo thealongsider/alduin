@@ -13,7 +13,51 @@ import alduin.schema_converter as schema_converter
 import alduin.tool as tool
 
 from alduin import theme, ui
+
 active_tools = [tool.read_file]
+
+tools_lookup = {t.__name__: t for t in active_tools}
+
+def execute_tool(
+    name_of_tool_to_execute: str, 
+    tools_lookup_table: dict,
+    args: Any, 
+    console: Console,
+) -> str: 
+    #get the tool function to execute
+    func = tools_lookup_table.get(name_of_tool_to_execute)
+
+    if not func:
+        error_msg = f"ERROR unknown tool {name_of_tool_to_execute}"
+        ui.print_tool_error(
+            console = console,
+            name = name_of_tool_to_execute,
+            error = error_msg
+        )  
+        return error_msg
+
+    ui.print_tool_request(
+        console = console,
+        name = name_of_tool_to_execute,
+        args = args
+    )
+
+    try:
+        result = func(**args)
+        ui.print_tool_result(
+            console = console,
+            name = name_of_tool_to_execute,
+            result = result
+        )
+        return result
+    except Exception as ex:
+        error_msg_try = f"Error in calling tool {name_of_tool_to_execute}"
+        ui.print_tool_error(
+            console = console,
+            name = name_of_tool_to_execute,
+            error = error_msg_try
+        )  
+        return error_msg_try
 
 
 def agent_loop(client: anthropic.Anthropic, console: Console) -> None:
@@ -60,7 +104,13 @@ def agent_loop(client: anthropic.Anthropic, console: Console) -> None:
                         output_tokens=assistant_reply.usage.output_tokens)
             elif block.type =="tool_use":
                 print(f"tool use requested for tool: {block.name} with args: {block.input}")
-
+                result = execute_tool(
+                    block.name,
+                    tools_lookup,
+                    block.input,
+                    console
+                )
+                
 
         
 
