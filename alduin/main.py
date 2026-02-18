@@ -5,7 +5,10 @@ from typing import Any
 
 import anthropic
 import dotenv
+import rich
 from rich.console import Console
+from alduin.llm import call
+import alduin.system_prompt as system_prompt
 
 from alduin import theme, ui
 
@@ -18,7 +21,7 @@ def agent_loop(client: anthropic.Anthropic, console: Console) -> None:
         console: The Rich Console for logging and UI.
     """
 
-    conversation: list[dict[str, Any]] = []
+    conversation: list[dict[str, Any]] = [] # maintain the state of conversation as a list. Send it with the LLM every time we make a call
 
     while True:
         try:
@@ -36,11 +39,20 @@ def agent_loop(client: anthropic.Anthropic, console: Console) -> None:
         ui.clear_previous_line()
         ui.print_user_message(console, user_input)
 
-        assistant_reply = (
-            "Krosis. That knowledge cannot be known to me. "
-            "Even the Firstborn of Akatosh has limits. Very few. But they exist."
-        )
-        ui.print_assistant_reply(console=console, text=assistant_reply, input_tokens=0, output_tokens=0)
+        assistant_reply = call(client = client, 
+                            console = console,
+                            system_prompt = system_prompt.get(),
+                            messages = conversation,
+                            tool_schemas = [])
+
+        rich.pretty.pprint(assistant_reply)
+
+        conversation.append({"role": "assistant", "content": assistant_reply.content})
+
+        for block in assistant_reply.content: # why is this a loop? 
+            ui.print_assistant_reply(console=console, text=block.text, input_tokens=assistant_reply.usage.input_tokens, output_tokens=assistant_reply.usage.output_tokens)
+
+        
 
 
 def main() -> None:
