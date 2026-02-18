@@ -78,3 +78,21 @@ After finishing all these steps, **go to [Pre-event Environment Setup Poll on Gi
 GitHub poll link: https://github.com/primaprashant/alduin/discussions/1
 
 That's it. See you at the workshop!
+
+## Tools Summary
+
+The `alduin/tool.py` module provides the following file system and command execution tools for the coding agent:
+
+### Available Tools
+
+- **`read_file(path: str)`** - Reads and returns the contents of a file at the specified path. Returns an error if the path is not a valid file.
+
+- **`edit_file(path: str, old_str: str, new_str: str)`** - Creates a new file or edits an existing file by replacing a string occurrence. 
+  - If `old_str` is empty, creates a new file with `new_str` as content
+  - For existing files, replaces exactly one occurrence of `old_str` with `new_str`
+  - Ensures files are only created/edited within the current working directory
+  - Returns errors if `old_str` doesn't exist or appears multiple times
+
+- **`list_files(path: str)`** - Lists all files and directories in the specified path. Returns a formatted list with directories marked with a `/` suffix.
+
+- **`bash(command: str)`** - Placeholder for executing bash commands (not yet implemented). Intended to execute shell commands with user confirmation and error handling.

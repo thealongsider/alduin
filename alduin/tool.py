@@ -52,7 +52,7 @@ def edit_file(path: str, old_str: str, new_str: str) -> str:
     if not p.is_file():
         return f"Error: file not found {p}"
     
-    content = p.read_text()
+    contents = p.read_text()
 
     count_old_str = contents.count(old_str)
 
