@@ -14,7 +14,7 @@ import alduin.tool as tool
 
 from alduin import theme, ui
 
-active_tools = [tool.read_file, tool.list_files]
+active_tools = [tool.read_file, tool.list_files, tool.edit_file]
 
 tools_lookup = {t.__name__: t for t in active_tools}
 
@@ -52,7 +52,7 @@ def execute_tool(
         )
         return result
     except Exception as ex:
-        error_msg_try = f"Error in calling tool {name_of_tool_to_execute}"
+        error_msg_try = f"Error in calling tool {name_of_tool_to_execute} with exception {ex}"
         ui.print_tool_error(
             console = console,
             name = name_of_tool_to_execute,
