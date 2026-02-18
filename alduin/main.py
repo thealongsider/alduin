@@ -14,7 +14,7 @@ import alduin.tool as tool
 
 from alduin import theme, ui
 
-active_tools = [tool.read_file]
+active_tools = [tool.read_file, tool.list_files]
 
 tools_lookup = {t.__name__: t for t in active_tools}
 
