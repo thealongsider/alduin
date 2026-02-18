@@ -19,7 +19,7 @@ def read_file(path: str) -> str:
 
     #with q.open() as f: #maybe older way
     #    return f.readline()
-    return p.read_test()
+    return p.read_text()
 
 
 
