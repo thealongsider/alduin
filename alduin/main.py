@@ -9,8 +9,11 @@ import rich
 from rich.console import Console
 from alduin.llm import call
 import alduin.system_prompt as system_prompt
+import alduin.schema_converter as schema_converter
+import alduin.tool as tool
 
 from alduin import theme, ui
+active_tools = [tool.read_file]
 
 
 def agent_loop(client: anthropic.Anthropic, console: Console) -> None:
@@ -43,14 +46,21 @@ def agent_loop(client: anthropic.Anthropic, console: Console) -> None:
                             console = console,
                             system_prompt = system_prompt.get(),
                             messages = conversation,
-                            tool_schemas = [])
+                            tool_schemas = schema_converter.generate_tool_schema(active_tools))
 
-        rich.pretty.pprint(assistant_reply)
+        rich.pretty.pprint(assistant_reply) # allows us to see the response. 
 
         conversation.append({"role": "assistant", "content": assistant_reply.content})
 
         for block in assistant_reply.content: # why is this a loop? 
-            ui.print_assistant_reply(console=console, text=block.text, input_tokens=assistant_reply.usage.input_tokens, output_tokens=assistant_reply.usage.output_tokens)
+            if block.type == "text":
+                ui.print_assistant_reply(console=console, 
+                        text=block.text, 
+                        input_tokens=assistant_reply.usage.input_tokens, 
+                        output_tokens=assistant_reply.usage.output_tokens)
+            elif block.type =="tool_use":
+                print(f"tool use requested for tool: {block.name} with args: {block.input}")
+
 
         
 

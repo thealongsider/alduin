@@ -12,8 +12,15 @@ def read_file(path: str) -> str:
     Returns:
         The contents of the file, or an error message if it fails.
     """
+    p = Path(path)
 
-    pass
+    if not p.is_file():#initially used `exists` but this is better
+        raise f"ERROR: {p} is not a file, please make sue it is the right path"
+
+    #with q.open() as f: #maybe older way
+    #    return f.readline()
+    return p.read_test()
+
 
 
 def edit_file(path: str, old_str: str, new_str: str) -> str:
