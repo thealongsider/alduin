@@ -18,13 +18,14 @@ active_tools = [tool.read_file, tool.list_files]
 
 tools_lookup = {t.__name__: t for t in active_tools}
 
-def execute_tool(
+def execute_tool( 
     name_of_tool_to_execute: str, 
     tools_lookup_table: dict,
     args: Any, 
     console: Console,
 ) -> str: 
     #get the tool function to execute
+    #this essentially tells the AI what to do with the tool
     func = tools_lookup_table.get(name_of_tool_to_execute)
 
     if not func:
@@ -129,11 +130,6 @@ def agent_loop(client: anthropic.Anthropic, console: Console) -> None:
                     "content": tool_results
                 }
             )
-
-            
-
-
-        
 
 
 def main() -> None:
