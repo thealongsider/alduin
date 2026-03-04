@@ -96,3 +96,4 @@ The `alduin/tool.py` module provides the following file system and command execu
 - **`list_files(path: str)`** - Lists all files and directories in the specified path. Returns a formatted list with directories marked with a `/` suffix.
 
 - **`bash(command: str)`** - Placeholder for executing bash commands (not yet implemented). Intended to execute shell commands with user confirmation and error handling.
+
